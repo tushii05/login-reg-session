@@ -5,7 +5,7 @@ const register = async (req, res) => {
   try {
     const user = new User({ name, lastname, username, password });
     await user.save();
-    req.session.userId = user._id; 
+    req.session.userId = user._id;
     res.status(201).json({ message: 'User registered successfully' });
   } catch (err) {
     res.status(400).json({ error: 'Registration failed', details: err.message });
@@ -23,7 +23,7 @@ const login = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
-    req.session.userId = user._id; 
+    req.session.userId = user._id;
     res.json({ message: 'Login successful' });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
@@ -36,7 +36,7 @@ const logout = (req, res) => {
     if (err) {
       return res.status(500).json({ error: 'Logout failed' });
     }
-    res.clearCookie('connect.sid'); 
+    res.clearCookie('connect.sid');
     res.json({ message: 'Logout successful' });
   });
 };
@@ -56,4 +56,20 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { register, login, logout, getProfile };
+
+const getAllData = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'No users found' });
+    }
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users', details: err.message });
+  }
+};
+
+
+module.exports = { register, login, logout, getProfile, getAllData };
